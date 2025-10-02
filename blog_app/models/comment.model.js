@@ -8,6 +8,10 @@ const commentSchema = new mongoose.Schema({
     commentOnPost: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post"
+    },
+    commentBy: {
+        type: String,
+        required: true
     }
 }, { timestamps: true })
 
