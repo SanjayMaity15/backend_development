@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 // signup controller
 
@@ -46,4 +47,67 @@ export const signUp = async (req, res) => {
 			message: "server error",
 		});
 	}
+};
+
+// login controller
+
+export const login = async (req, res) => {
+	try {
+		const { email, password } = req.body;
+
+		if (!email || !password) {
+			return res.status(400).json({
+				success: false,
+				message: "All filed must be filled",
+			});
+		}
+
+		let user = await User.findOne({ email });
+
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const payload = {
+			id: user._id,
+			email: user.email,
+			role: user.role,
+		};
+
+		if (await bcrypt.compare(password, user.password)) {
+			let token = jwt.sign(payload, process.env.JWT_SECRET, {
+				expiresIn: "2h",
+			});
+
+            user = user.toObject()
+			user.token = token;
+            delete user.password
+            
+            const options = {
+                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                httpOnly : true
+            }
+
+            res.cookie("token", token, options).status(200).json({
+                success: true,
+                token: token,
+                user,
+                message: "Logged in successfully"
+            });
+		} else {
+			return res.status(400).json({
+				success: false,
+				message: "Incorrect password",
+			});
+		}
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            data: error,
+            message: "Server error"
+        })
+    }
 };
