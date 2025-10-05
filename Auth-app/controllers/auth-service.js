@@ -96,7 +96,10 @@ export const login = async (req, res) => {
                 token: token,
                 user,
                 message: "Logged in successfully"
-            });
+			});
+			
+			
+
 		} else {
 			return res.status(400).json({
 				success: false,
