@@ -1,6 +1,7 @@
 import File from "../models/File.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import path from "path";
+import { sendMailToUser } from "./mail-service.js";
 
 // check file format support or not
 
@@ -48,7 +49,9 @@ export const imageUpload = async (req, res) => {
 			email,
 			tags,
 			imageUrl: response.secure_url,
-		});
+        });
+        
+        sendMailToUser(email, name, "Image uploaded successfully" ,response.secure_url)
 
 		return res.status(200).json({
 			succcess: true,
@@ -95,6 +98,13 @@ export const imageUploadResize = async (req, res) => {
 			imageUrl: response.secure_url,
 		});
 
+        sendMailToUser(
+			email,
+			name,
+			"Image compress and uploaded successfully",
+			response.secure_url
+		);
+
 		return res.status(200).json({
 			succcess: true,
 			data: result,
@@ -139,6 +149,13 @@ export const videoUpload = async (req, res) => {
 			tags,
 			imageUrl: response.secure_url,
 		});
+
+        sendMailToUser(
+			email,
+			name,
+			"video uploaded successfully",
+			response.secure_url
+		);
 
 		return res.status(200).json({
 			succcess: true,
