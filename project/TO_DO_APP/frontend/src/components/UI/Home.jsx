@@ -30,7 +30,7 @@ const Home = () => {
             getAllTodos()
 			alert("Delete successfully");
 		} catch (error) {
-			console.log("Error in delete");
+			console.log("Error in delete todo");
 		}
     };
     
